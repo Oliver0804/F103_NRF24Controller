@@ -1,0 +1,12 @@
+{
+	"folders": [],
+	"settings": {
+		"files.associations": {
+			"settings.h": "c",
+			"gatt.h": "c",
+			"lbs.h": "c",
+			"segger_rtt.h": "c",
+			"all_define.h": "c"
+		}
+	}
+}
