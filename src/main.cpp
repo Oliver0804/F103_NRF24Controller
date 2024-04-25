@@ -4,15 +4,6 @@
 #include "printf.h"
 
 #include "RF24.h"
-//         +-------+-------+-------+-------+
-//         | ROLL  | PITCH |  YAW  |THRUST |
-//         +-------+-------+-------+-------+
-// Length      4       4       4       2      bytes
-// Name	Byte	Size	Type	Comment
-// ROLL	0-3	4	float	The pitch set-point
-// PITCH	4-7	4	float	The roll set-point
-// YAW	8-11	4	float	The yaw set-point
-// THRUST	12-13	2	uint16_t	The thrust set-point
 
 #include "gpio.h"
 #include "buzzer.h"
@@ -20,18 +11,18 @@
 #include "button.h"
 
 #include "eeprom.h"
+#include "protocol.h"
 
 RF24 radio(CE_PIN, CSN_PIN);
 Buzzer buzzer;
 Button button;
 ADC joycon;
-int yaw, throttle, pitch, roll;
+int16_t yaw, throttle, pitch, roll;
 
 void setup()
 {
   Wire.begin();
   Serial.begin(115200);
-  Serial.println("Hello World");
   joycon.init();
   // eepromWriteByte(0x10, 0xA5);
   readAndPrintAllData();
@@ -47,4 +38,18 @@ void loop()
   }
 
   joycon.readAll(&yaw, &throttle, &pitch, &roll);
+  // 创建控制数据的 payload
+  String payload = createControlPayload(roll, pitch, yaw, throttle, false, false, false, true, false, false, false, true);
+
+  // 使用特定的端口和通道信息创建完整的CRTP数据包
+  String crtpPacket = createCRTPPacket(0x01, 0x00, 0x00, payload);
+
+  // 打印出CRTP数据包以便查看内容
+  // Serial.println("CRTP Packet:");
+  for (int i = 0; i < payload.length(); i++)
+  {
+    Serial.print((uint8_t)payload[i], HEX);
+    Serial.print(" ");
+  }
+  delay(1000);
 }

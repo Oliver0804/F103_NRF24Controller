@@ -9,7 +9,7 @@ public:
     static int readThrottle();
     static int readPitch();
     static int readRoll();
-    static void readAll(int *yaw, int *throttle, int *pitch, int *roll);
+    static void readAll(int16_t *yaw, int16_t *throttle, int16_t *pitch, int16_t *roll);
 };
 
 #endif // ADC_H

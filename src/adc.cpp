@@ -1,7 +1,8 @@
-#include "gpio.h"
-
-#include "adc.h"
 #include <Arduino.h> // 包含 Arduino 函式庫，如果你使用的是其他平台，可能需要更換或修改這個包含
+
+#include "gpio.h"
+#include "adc.h"
+#include <stdint.h> // Include the standard type definitions
 
 void ADC::init()
 {
@@ -34,7 +35,7 @@ int ADC::readRoll()
 }
 
 // get all the values
-void ADC::readAll(int *yaw, int *throttle, int *pitch, int *roll)
+void ADC::readAll(int16_t *yaw, int16_t *throttle, int16_t *pitch, int16_t *roll)
 {
     *yaw = analogRead(YAW_PIN);
     *throttle = analogRead(THR_PIN);
