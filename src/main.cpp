@@ -1,6 +1,6 @@
 #include <Arduino.h>
 #include <SPI.h>
-
+#include "main.h"
 #include "printf.h"
 
 #include "RF24.h"
@@ -18,6 +18,16 @@ Buzzer buzzer;
 Button button;
 ADC joycon;
 int16_t yaw, throttle, pitch, roll;
+bool auxChannels[KEY_NUM_MAX] = {true, false, true, false, true, true, false, true}; // Example states
+
+void byteToBoolArray(uint8_t byteVal, bool auxChannels[KEY_NUM_MAX])
+{
+  for (int i = 0; i < KEY_NUM_MAX; i++)
+  {
+    // 检查byteVal的每一位
+    auxChannels[i] = byteVal & (1 << i);
+  }
+}
 
 void setup()
 {
@@ -36,20 +46,22 @@ void loop()
   {
     Serial.println(button.getCombinationKeyString());
   }
-
+  byteToBoolArray(button.getCombinationKey(), auxChannels);
   joycon.readAll(&yaw, &throttle, &pitch, &roll);
   // 创建控制数据的 payload
-  String payload = createControlPayload(roll, pitch, yaw, throttle, false, false, false, true, false, false, false, true);
+  String payload = createControlPayload(roll, pitch, yaw, throttle, auxChannels);
 
   // 使用特定的端口和通道信息创建完整的CRTP数据包
-  String crtpPacket = createCRTPPacket(0x01, 0x00, 0x00, payload);
+  String crtpPacket = createCRTPPacket(PORT_ID, CHANNEL_ID, LINK_ID, payload);
 
   // 打印出CRTP数据包以便查看内容
-  // Serial.println("CRTP Packet:");
+  Serial.print("\nPacket:");
   for (int i = 0; i < payload.length(); i++)
   {
     Serial.print((uint8_t)payload[i], HEX);
-    Serial.print(" ");
+    Serial.print("\t");
   }
+  parseControlPayload(parseAndPrintCRTPPacket(crtpPacket));
+  // parseControlPayload(payload);
   delay(1000);
 }

@@ -5,3 +5,7 @@
 //
 // Author: Oliver0804
 // Date: 202040425
+
+#define PORT_ID 0x01    // max 4bit
+#define CHANNEL_ID 0x01 // max 2bit
+#define LINK_ID 0x01    // max 2bit

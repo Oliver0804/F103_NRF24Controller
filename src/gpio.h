@@ -19,6 +19,8 @@
 #define ROLL_PIN PA3
 
 // KEY
+// 按鈕數量
+#define KEY_NUM_MAX 8
 #define KEY1_PIN PA15
 #define KEY2_PIN PB11
 #define KEY3_PIN PC15
